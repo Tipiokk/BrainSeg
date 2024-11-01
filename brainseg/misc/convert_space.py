@@ -1,10 +1,12 @@
 import numpy as np
 
 
-def build_coord_from_param(ox, oy, oz, slice_number):
-    xbounds = np.array([-32, 32])
-    zbounds = np.array([28, -22])
+def build_coord_from_param(ox, oy, oz, slice_number,
+                           top=28, bottom=-22, left=-32, right=32):
+    xbounds = np.array([left, right])
+    zbounds = np.array([top, bottom])
     interpcoord = np.array([0, slice_number, 0])
+    # why 999 and not 1000 ?
     pixelsize = (zbounds[0] - zbounds[1]) / 999
     radianx = ox * np.pi / 180
     radiany = oy * np.pi / 180
@@ -54,9 +56,10 @@ def get_values_from_wb(ox, oy, oz, slice_number):
     return text
 
 
-def pixel_slice_to_mri_3d(x, y, slice_id, angles):
+def pixel_slice_to_mri_3d(x, y, slice_id, angles, top=28, bottom=-22, left=-32, right=32):
     """Returns a numpy ndarray of size 3 (x, y, z)"""
-    transfer_matrix = build_coord_from_param(angles[0], angles[1], angles[2], slice_id)
+    transfer_matrix = build_coord_from_param(angles[0], angles[1], angles[2], slice_id,
+                                             top=28, bottom=-22, left=-32, right=32)
     point = np.array([x, y, 1])
 
     return transfer_matrix.T @ point

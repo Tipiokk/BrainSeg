@@ -20,7 +20,7 @@ from prepro_svg import is_line
 from brainseg.math import distance
 
 
-def quickfix_multipolygon(geo):
+def quickfix_multipolygon_qupath(geo):
     geo = geo.copy()
     for feat in geo["features"]:
         if feat is None:

@@ -13,7 +13,7 @@ from skimage.measure import find_contours
 from skimage.segmentation import expand_labels
 
 from brainseg.config import fill_with_config
-from brainseg.geo import quickfix_multipolygon, quickfix_multipolygon_shapely, transform_backward_histo, \
+from brainseg.geo import quickfix_multipolygon_qupath, quickfix_multipolygon_shapely, transform_backward_histo, \
     transform_rescale, record_point_coordinates, transform_from_dict
 from brainseg.misc.points import transfer_points
 from brainseg.path import build_path_histo, build_path_mri
@@ -214,7 +214,7 @@ def run_slice(args, slice_id):
 
     merged_geojson = quickfix_multipolygon_shapely(merged_geojson)
     merged_geojson = intersect_gm(merged_geojson)
-    merged_geojson_qupath = quickfix_multipolygon(merged_geojson)
+    merged_geojson_qupath = quickfix_multipolygon_qupath(merged_geojson)
     output_file = build_path_histo(args.mri_atlas_dir, slice_id, args.merged_annotations_mask)
     write_histo(merged_geojson_qupath, output_file)
 
