@@ -45,6 +45,19 @@ def process_histo_contrasted(histo):
     return image_histo
 
 
+def process_histo_contrasted2(histo):
+    image_histo = (histo[0] * 0.4 + histo[1] * 0.4 + histo[2] * 0.2) * 1 + histo[3] * (-20) - histo[4] * 50 - 50
+    image_histo = np.clip(image_histo, 0, 255)
+    return image_histo
+
+
+def process_histo_contrasted3(histo):
+    image_histo = (histo[0] * 0.4 + histo[1] * 0.4 + histo[2] * 0.2) * 1 + histo[3] * (-20) - histo[4] * 50 - 50
+    image_histo = 200 - image_histo
+    image_histo = np.clip(image_histo, 0, 255)
+    return image_histo
+
+
 def process_histo_raw(histo):
     image_histo = histo[0] * 0.4 + histo[1] * 0.4 + histo[2] * 0.2
     return image_histo
@@ -66,6 +79,19 @@ def process_mri_contrasted(mri):
     return image_mri
 
 
+def process_mri_contrasted2(mri):
+    image_mri = mri[1] - mri[4] * 20 - mri[3] * 200 + 200
+    image_mri = np.clip(image_mri, 0, 255)
+    return image_mri
+
+
+def process_mri_contrasted3(mri):
+    image_mri = mri[1] - mri[4] * 20 - mri[3] * 200 + 200
+    image_mri = 200 - image_mri
+    image_mri = np.clip(image_mri, 0, 255)
+    return image_mri
+
+
 def process_mri_raw(mri):
     image_mri = mri[1]
     return image_mri
@@ -75,6 +101,8 @@ MAP_IMAGE_TYPE = dict(
     binary=(process_histo_binary, process_mri_binary),
     original=(process_histo_original, process_mri_original),
     contrasted=(process_histo_contrasted, process_mri_contrasted),
+    contrasted2=(process_histo_contrasted2, process_mri_contrasted2),
+    contrasted3=(process_histo_contrasted3, process_mri_contrasted3),
     raw=(process_histo_raw, process_mri_raw),
 )
 
@@ -133,8 +161,11 @@ def build_image_histo(args, histo_root, histo_annotation_root, section_id,
     if dict_affine_params is None:
         dict_affine_params = dict()
 
-    histo_geojson = gpd.read_file(build_path_histo(
-        histo_annotation_root, section_id, filename_mask_annotation))
+    histo_geojson_path = build_path_histo(
+        histo_annotation_root, section_id, filename_mask_annotation)
+    if not os.path.exists(histo_geojson_path):
+        raise FileNotFoundError(histo_geojson_path)
+    histo_geojson = gpd.read_file(histo_geojson_path)
     # depending on the version, the name is already there
     calculate_name(histo_geojson)
 
@@ -476,6 +507,9 @@ def create_transforms(
         # check if not too few pixels are not background
         if (image_mri != image_mri.min()).mean() < 0.01:
             raise RuntimeError(f"An image ({section_id}) has almost constant value, this can't be registered !")
+
+    except FileNotFoundError:
+        image_histo, image_mri = None, None
 
     except Exception as e:
         # raise
