@@ -18,7 +18,7 @@ from PIL import Image
 from scipy import ndimage
 
 from brainseg.config import fill_with_config
-from brainseg.geo import quickfix_multipolygon
+from brainseg.geo import quickfix_multipolygon_qupath
 from brainseg.path import build_path_histo_segmentation
 from brainseg.polygon import build_polygon_correspondences
 from brainseg.svg.utils import save_element, is_line, points_to_numpy, numpy_to_points
@@ -211,7 +211,7 @@ def save_geojson(args, contours_wm, contours_outline, slice_id):
     ))
     all_objects.append(feat)
 
-    geo_object = quickfix_multipolygon(FeatureCollection(all_objects))
+    geo_object = quickfix_multipolygon_qupath(FeatureCollection(all_objects))
     output = build_path_histo_segmentation(
         args.annotations_dir, slice_id, args.annotations_mask, "seg", "geojson"
     )

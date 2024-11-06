@@ -23,7 +23,7 @@ from skimage.measure import find_contours
 from skimage.segmentation import expand_labels
 
 from brainseg.config import fill_with_config
-from brainseg.geo import quickfix_multipolygon, quickfix_multipolygon_shapely, transform_backward_histo, \
+from brainseg.geo import quickfix_multipolygon_qupath, quickfix_multipolygon_shapely, transform_backward_histo, \
     transform_rescale, record_point_coordinates, transform_from_dict, transform_from_manual_correction, \
     split_multipolygons_to_polygons, fix_geojson_file
 from brainseg.misc.manual_correction import process_pial_gm_manual_correction, match_params
@@ -276,7 +276,7 @@ def export_parcellation(args, merged_geojson, slice_id, vectorized_atlas, raw=Fa
     output_file = build_path_histo(args.mri_atlas_dir, slice_id, args.merged_annotations_mask)
 
     if not raw:
-        merged_geojson_qupath = quickfix_multipolygon(merged_geojson)
+        merged_geojson_qupath = quickfix_multipolygon_qupath(merged_geojson)
         write_histo(merged_geojson_qupath, output_file)
 
     image_mri = imread(build_path_mri(args.mri_section_dir, slice_id, "raw"))

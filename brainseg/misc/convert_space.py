@@ -59,7 +59,7 @@ def get_values_from_wb(ox, oy, oz, slice_number):
 def pixel_slice_to_mri_3d(x, y, slice_id, angles, top=28, bottom=-22, left=-32, right=32):
     """Returns a numpy ndarray of size 3 (x, y, z)"""
     transfer_matrix = build_coord_from_param(angles[0], angles[1], angles[2], slice_id,
-                                             top=28, bottom=-22, left=-32, right=32)
+                                             top=top, bottom=bottom, left=left, right=right)
     point = np.array([x, y, 1])
 
     return transfer_matrix.T @ point
