@@ -94,6 +94,7 @@ def main(args):
             if not saved_hash == hash_param:
                 print(saved_hash, hash_param)
                 warnings.warn("WARN : hash mismatch, you may have changed the manual correction params")
+                raise RuntimeError(f"The hash for section {i} is not valid")
             run_slice(args, i, dict_affine_params)
         except (FileExistsError, FileNotFoundError) as e:
             print(str(e))
