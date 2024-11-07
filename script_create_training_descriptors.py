@@ -31,7 +31,12 @@ def export_patches(pairs_geo_slides, name, outdir):
     )
 
     for geo, str_slide in pairs_geo_slides:
-        slide = aicspylibczi.CziFile(str_slide)
+        print(f"Running for {str_slide}")
+        try:
+            slide = aicspylibczi.CziFile(str_slide)
+        except Exception as e:
+            print("Exception, skipping. Error =", e)
+            continue
         size = get_slide_size(slide)
         current_template = template.copy()
         current_template["slidepath"] = str_slide
