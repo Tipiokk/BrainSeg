@@ -19,7 +19,10 @@ import matplotlib
 from skimage.registration import phase_cross_correlation
 from tqdm import tqdm
 
-matplotlib.use('TkAgg')
+# using 'TkAgg' caused a tkinter bug on WSL
+# I recall there were an issue with the basic 'agg' but can't remember
+# So let's try it back
+matplotlib.use('agg')
 
 from brainseg.geo import svg_to_geojson, simplify_line, simplify_all, transform_geojson, save_geojson
 from brainseg.registration import get_affine_transform_matrix
