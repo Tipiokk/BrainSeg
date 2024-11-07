@@ -1,3 +1,4 @@
+import os.path
 import pickle
 import re
 from itertools import product
@@ -317,3 +318,14 @@ def calculate_name(histo_geojson):
         histo_geojson["name"] = classes
     else:
         histo_geojson["name"] = histo_geojson["name"].fillna(classes)
+
+
+def hash_mri_window(mri_window):
+    return ":".join(map(str, mri_window))
+
+
+def check_hash(hash_filepath, hash_value):
+    if not os.path.exists(hash_filepath):
+        return False
+    saved_hash = read_txt(hash_filepath)[0]
+    return saved_hash == hash_value
