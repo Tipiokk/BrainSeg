@@ -95,22 +95,25 @@ def fix_geojson_file(filename):
 
     data['features'] = filt_features
     print("debug", len(data["features"]))
-    # remove not ok shapely
-    filt_features = []
-    for feature in data['features']:
-        discard = False
-        try:
-            shape(feature["geometry"])
-        except Exception as e:
-            print(f"A mistake occurs due to shapely error {e}")
-            # print(feature)
-            print("=" * 40)
-        else:
-            pass
-        if not discard:
-            filt_features.append(feature)
 
-    data['features'] = filt_features
+    if False:  # does nothing normally
+        # remove not ok shapely
+        filt_features = []
+        for feature in data['features']:
+            discard = False
+            try:
+                shape(feature["geometry"])
+            except Exception as e:
+                print(f"A mistake occurs due to shapely error : {e}")
+                print(feature)
+                print("=" * 40)
+            else:
+                pass
+            if not discard:
+                filt_features.append(feature)
+
+        data['features'] = filt_features
+
     print("debug", len(data["features"]))
     # Save the modified data back to the same location
     with open(filename, 'w') as f:

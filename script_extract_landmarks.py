@@ -43,6 +43,7 @@ def extract_points(args, slice_id):
     mri_index = histo_slice_to_mri_slice(args, slice_id)
     file_path = build_path_histo(args.mri_projections_dir, slice_id, args.merged_annotations_mask)
     if not Path(file_path).exists():
+        # print(file_path, "does not exist")
         return None
 
     obj = gpd.read_file(file_path)
@@ -122,7 +123,12 @@ def main(args):
     ref_nifti = load_nifti(args.nifti_reference)
     list_slice = [extract_points(args, slice_id) if slice_id not in excluded else None
                   for slice_id in slices_indices]
-    slices_indices, list_slice = zip(*filter(lambda x: x[1] is not None, zip(slices_indices, list_slice)))
+    print(list_slice)
+    print(slices_indices)
+    full_list = list(zip(*filter(lambda x: x[1] is not None, zip(slices_indices, list_slice))))
+    if len(full_list) == 0:
+        raise RuntimeError("No valid file found, please check")
+    slices_indices, list_slice = full_list
     coords, names = list(zip(*list_slice))
     coords = sum(coords, [])
     names = sum(names, [])

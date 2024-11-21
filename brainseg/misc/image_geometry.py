@@ -32,6 +32,88 @@ def fill_subpart_from_mask(big_image, subpart_image, mask, origin_coords):
     return big_image
 
 
+def extend_2d_array(array, new_width, new_height, fill_value=0):
+    """
+    Extends the width and height of a 2-D array to the specified dimensions.
+
+    Parameters:
+        array (list of lists or numpy.ndarray): The original 2-D array.
+        new_height (int): The desired height of the extended array.
+        new_width (int): The desired width of the extended array.
+        fill_value (any): The value to fill the extended portions with (default is 0).
+
+    Returns:
+        numpy.ndarray: The extended 2-D array.
+    """
+    # Convert to numpy array if the input is not already one
+    array = np.array(array)
+    current_height, current_width, *other_dims = array.shape
+
+    # Ensure new dimensions are at least as large as the current dimensions
+    if new_height < current_height or new_width < current_width:
+        raise ValueError("New dimensions must be greater than or equal to the current dimensions."
+                         f"{new_height}_{current_height}, {new_width}_{current_width}"
+                         )
+
+    # Create a new array with the desired dimensions filled with the fill_value
+    extended_array = np.full((new_height, new_width, *other_dims), fill_value, dtype=array.dtype)
+
+    # Copy the original array into the top-left corner of the new array
+    extended_array[:current_height, :current_width] = array
+
+    return extended_array
+
+
+def extend_2d_array_with_margin(array, new_width, new_height, margin=(0, 0), fill_value=0):
+    """
+    Extends the width and height of a 2-D array to the specified dimensions, with margins.
+
+    Parameters:
+        array (list of lists or numpy.ndarray): The original 2-D array.
+        new_height (int): The desired height of the extended array.
+        new_width (int): The desired width of the extended array.
+        margin (tuple): A tuple (margin_top, margin_left) defining the compensation before.
+                        The remaining margin will go at the end.
+        fill_value (any): The value to fill the extended portions with (default is 0).
+
+    Returns:
+        numpy.ndarray: The extended 2-D array.
+    """
+    # Convert to numpy array if the input is not already one
+    array = np.array(array)
+    current_height, current_width, *other_dims = array.shape
+
+    # Ensure new dimensions are at least as large as the current dimensions
+    if new_height < current_height or new_width < current_width:
+        raise ValueError("New dimensions must be greater than or equal to the current dimensions."
+                         f"{new_height}_{current_height}, {new_width}_{current_width}"
+                         )
+
+    # Extract margin information
+    margin_top, margin_left = margin
+    margin_bottom = new_height - current_height - margin_top
+    margin_right = new_width - current_width - margin_left
+
+    # Ensure margins are valid
+    if margin_bottom < 0 or margin_right < 0:
+        raise ValueError("Margins result in dimensions smaller than the original array.")
+
+    # Create a new array with the desired dimensions filled with the fill_value
+    extended_array = np.full((new_height, new_width, *other_dims), fill_value, dtype=array.dtype)
+
+    # Place the original array within the new array with margins
+    extended_array[
+        margin_top:margin_top + current_height,
+        margin_left:margin_left + current_width
+    ] = array
+
+    return extended_array
+
+
+def relu(x):
+    return max(0, x)
+
+
 def image_manual_correction(image, params, polygons, background=0, scale=1., swap_xy=False, margin=(0, 0)):
     if swap_xy:
         image = image.transpose((1, 0, 2))
@@ -58,11 +140,15 @@ def image_manual_correction(image, params, polygons, background=0, scale=1., swa
         size = int(1.5 * max(width, height))
         half_size = int(size / 2)
 
-        subimage = image[minx:maxx, miny:maxy]
+        # the problem is that here, the width height can mismatch the subimage.shape
+        # In this case, we need to pad the subimage
+        subimage = image[relu(minx):relu(maxx), relu(miny):relu(maxy)]
+        # padding
+        subimage = extend_2d_array_with_margin(subimage, height, width, margin=(relu(-minx), relu(-miny)))
         subimage_mask = np.zeros(subimage.shape[:2], dtype=bool)
         subimage_mask = draw_polygon(subimage_mask, translate_to_origin(poly))
 
-        # resize
+        # resize to enable rotation to work without overlapping
         subimage_mask = resize_and_pad_center(subimage_mask, size, size)
         subimage = resize_and_pad_center(subimage, size, size)
 

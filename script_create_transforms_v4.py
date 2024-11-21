@@ -14,7 +14,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 from brainseg.config import fill_with_config
-from brainseg.geo import polygons_to_geopandas
+from brainseg.geo import polygons_to_geopandas, fix_geojson_file
 from brainseg.misc.image_geometry import image_manual_correction
 from brainseg.misc.manual_correction import process_pial_gm_manual_correction
 from brainseg.parser import parse_dict_param
@@ -165,6 +165,9 @@ def build_image_histo(args, histo_root, histo_annotation_root, section_id,
         histo_annotation_root, section_id, filename_mask_annotation)
     if not os.path.exists(histo_geojson_path):
         raise FileNotFoundError(histo_geojson_path)
+
+    # there is a bug when loading with geopandas directly
+    fix_geojson_file(histo_geojson_path)
     histo_geojson = gpd.read_file(histo_geojson_path)
     # depending on the version, the name is already there
     calculate_name(histo_geojson)
@@ -187,7 +190,6 @@ def build_image_histo(args, histo_root, histo_annotation_root, section_id,
 
     histo_mod = image_manual_correction(histo_raw, params, ordered_pial, margin=margin,
                                         swap_xy=True, background=0, scale=predownscale_histo * redownscale_histo)
-
     histo_concat = format_histo(histo_mod, histo_pial, histo_gm)
     return MAP_IMAGE_TYPE[args.format_registration_type][0](histo_concat)
 
