@@ -20,7 +20,7 @@ from brainseg.misc.manual_correction import process_pial_gm_manual_correction
 from brainseg.parser import parse_dict_param
 from brainseg.path import build_path_mri, build_path_histo
 from brainseg.utils import (
-    get_processing_type, replace_lines_in_file, read_txt, hash_file,
+    get_scheduling_type, replace_lines_in_file, read_txt, hash_file,
     write_txt, calculate_name,
 )
 from brainseg.viz.draw import draw_polygons_from_geopandas_3
@@ -496,7 +496,7 @@ def create_transform_from_dirs(args, dir_histo, dir_mri, dir_histo_annotation,
     hash_param = hash_file(args.manual_correction_file)
     dict_affine_params = parse_dict_param(",".join(param_data))
     for section_id in tqdm(range(start, end, step)):
-        processing_type = get_processing_type(args.schedule_steps, args.schedule_transform_type, section_id)
+        processing_type = get_scheduling_type(args.schedule_steps, args.schedule_transform_type, section_id)
 
         is_made = create_transforms(
             dir_histo, dir_mri, dir_histo_annotation,

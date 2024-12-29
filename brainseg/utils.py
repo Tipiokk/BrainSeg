@@ -196,13 +196,13 @@ def extract_classification_name(x):
     return res
 
 
-def get_processing_type(steps, types, number):
+def get_scheduling_type(steps, types, number):
     milestones = list(map(int, steps.split()))
     types = types.split()
 
     if len(milestones) + 1 != len(types):
-        raise ValueError("Invalid configuration: Number of milestones and types don't match.\n"
-                         "The number of milestone + 1 should be equal the number of types")
+        raise ValueError("Invalid configuration: Number of steps and types don't match.\n"
+                         "The number of steps + 1 should be equal the number of types")
 
     for i in range(len(milestones)):
         if number < milestones[i]:

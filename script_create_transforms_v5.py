@@ -73,9 +73,6 @@ def adjust_contrast_2d_ignore_background(image, lower_percentile=5, upper_percen
     return adjusted_image
 
 
-import numpy as np
-
-
 def otsu_threshold(image):
     """
     Compute Otsu's threshold for a grayscale image using only NumPy.
@@ -210,6 +207,8 @@ MAP_IMAGE_TYPE = dict(
     contrasted3=(process_histo_contrasted3, process_mri_contrasted3),
     contrasted4=(process_histo_contrasted4, process_mri_contrasted4),
     raw=(process_histo_raw, process_mri_raw),
+    with_stem=(process_histo_contrasted4, process_mri_contrasted4),
+    without_stem=(process_histo_contrasted4, process_mri_contrasted3),
 )
 
 
@@ -260,7 +259,7 @@ def format_mri(mri_raw, mri_pial, mri_gm, mri_wm):
     return mri_concat
 
 
-def build_image_histo(args, histo_root, histo_annotation_root, section_id,
+def build_image_histo(registration_type, histo_root, histo_annotation_root, section_id,
                       filename_mask_raw, filename_mask_annotation,
                       dict_affine_params=None,
                       predownscale_histo=0.1, redownscale_histo=0.25):
@@ -298,17 +297,17 @@ def build_image_histo(args, histo_root, histo_annotation_root, section_id,
     histo_mod = image_manual_correction(histo_raw, params, ordered_pial, margin=margin,
                                         swap_xy=True, background=0, scale=predownscale_histo * redownscale_histo)
     histo_concat = format_histo(histo_mod, histo_pial, histo_gm)
-    return MAP_IMAGE_TYPE[args.format_registration_type][0](histo_concat)
+    return MAP_IMAGE_TYPE[registration_type][0](histo_concat)
 
 
-def build_image_mri(args, mri_root, section_id):
+def build_image_mri(registration_type, mri_root, section_id):
     mri_gm = io.imread(build_path_mri(mri_root, section_id, "gm"))
     mri_pial = io.imread(build_path_mri(mri_root, section_id, "pial"))
     mri_wm = io.imread(build_path_mri(mri_root, section_id, "wm"))
     mri_raw = io.imread(build_path_mri(mri_root, section_id, "raw"))
 
     mri_concat = format_mri(mri_raw, mri_pial, mri_gm, mri_wm)
-    return MAP_IMAGE_TYPE[args.format_registration_type][1](mri_concat)
+    return MAP_IMAGE_TYPE[registration_type][1](mri_concat)
 
 
 def write_point_txt(point_file, points):
@@ -595,19 +594,19 @@ def format_to_grey_image(image_array):
 
 
 def create_transforms(
-        args, dir_histo, dir_mri, dir_histo_annotation,
+        registration_type, dir_histo, dir_mri, dir_histo_annotation,
         filename_mask_raw, filename_mask_annotation, section_id,
         output_dir, hemisphere, dict_affine_params, hash_param
 ):
     try:
         image_histo = build_image_histo(
-            args, dir_histo, dir_histo_annotation, section_id,
+            registration_type, dir_histo, dir_histo_annotation, section_id,
             filename_mask_raw, filename_mask_annotation,
             dict_affine_params=dict_affine_params
         )
 
         image_mri = build_image_mri(
-            args, dir_mri, section_id
+            registration_type, dir_mri, section_id
         )
 
         if image_histo.std() == 0 or image_mri.std() == 0:
@@ -715,10 +714,13 @@ def create_transform_from_dirs(args, dir_histo, dir_mri, dir_histo_annotation,
     hash_param = hash_file(args.manual_correction_file)
     dict_affine_params = parse_dict_param(",".join(param_data))
     for section_id in tqdm(range(start, end, step)):
-        processing_type = get_scheduling_type(args.schedule_steps, args.schedule_transform_type, section_id)
+        processing_type = get_scheduling_type(args.schedule_transform_steps,
+                                              args.schedule_transform_type, section_id)
+        registration_type = get_scheduling_type(args.schedule_registration_steps,
+                                                args.schedule_registration_type, section_id)
 
         is_made = create_transforms(
-            args, dir_histo, dir_mri, dir_histo_annotation,
+            registration_type, dir_histo, dir_mri, dir_histo_annotation,
             filename_mask_raw, filename_mask_annotation, section_id,
             output_dir, processing_type, dict_affine_params, hash_param
         )
@@ -748,10 +750,11 @@ if __name__ == "__main__":
     parser.add_argument("--manual_correction_file", type=Path, default=None)
     parser.add_argument("--histo_mask", type=str, default=None)
     parser.add_argument("--transforms_dir", type=Path, default=None)
-    parser.add_argument("--schedule_steps", type=str, default=None)
+    parser.add_argument("--schedule_transform_steps", type=str, default=None)
     parser.add_argument("--schedule_transform_type", type=str, default=None)
     parser.add_argument("--hemisphere", type=str, default=None)
-    parser.add_argument("--format_registration_type", type=str, default=None)
+    parser.add_argument("--schedule_registration_steps", type=str, default=None)
+    parser.add_argument("--schedule_registration_type", type=str, default=None)
     parser.add_argument("--start", type=int, default=None)
     parser.add_argument("--end", type=int, default=None)
     parser.add_argument("--step", type=int, default=None)

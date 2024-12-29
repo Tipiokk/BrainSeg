@@ -20,7 +20,7 @@ from brainseg.path import build_path_histo, build_path_mri
 from brainseg.polygon import build_polygon_correspondences
 from shapely.geometry import Polygon as ShapelyPolygon, MultiPolygon as ShapelyMultiPolygon, shape
 
-from brainseg.utils import getIfromRGB, get_processing_type, read_histo, write_histo, read_atlas, read_txt
+from brainseg.utils import getIfromRGB, get_scheduling_type, read_histo, write_histo, read_atlas, read_txt
 from brainseg.viz.draw import draw_geojson_on_image, draw_polygon
 
 
@@ -192,7 +192,7 @@ def run_slice(args, slice_id):
     image = imread(build_path_mri(args.mri_section_dir, slice_id, "raw"))
     draw_geojson_on_image(image, vectorized_atlas, output_image)
 
-    processing_type = get_processing_type(args.schedule_steps, args.schedule_transfer_type, slice_id)
+    processing_type = get_scheduling_type(args.schedule_steps, args.schedule_transfer_type, slice_id)
     print(processing_type)
     histo_resized_space = transform_backward_mri_histo(args, vectorized_atlas, slice_id, processing_type)
 

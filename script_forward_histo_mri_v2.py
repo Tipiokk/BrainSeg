@@ -14,7 +14,7 @@ from brainseg.misc.manual_correction import process_pial_gm_manual_correction, m
 from brainseg.misc.points import transfer_points
 from brainseg.parser import parse_dict_param
 from brainseg.path import build_path_histo, build_path_mri
-from brainseg.utils import read_histo, write_histo, get_processing_type, read_txt, hash_file, \
+from brainseg.utils import read_histo, write_histo, get_scheduling_type, read_txt, hash_file, \
     extract_classification_name, calculate_name
 from brainseg.viz.draw import draw_geojson_on_image
 
@@ -53,7 +53,7 @@ def manual_correction(histo_space, pial, params):
 
 
 def run_slice(args, slice_id, dict_affine_params):
-    processing_type = get_processing_type(args.schedule_steps, args.schedule_transfer_type, slice_id)
+    processing_type = get_scheduling_type(args.schedule_transform_steps, args.schedule_transfer_type, slice_id)
     print("Processing type", processing_type)
     histo_file = build_path_histo(args.annotations_dir, slice_id, args.merged_annotations_mask)
     histo = read_histo(histo_file)  # geojson handled for now
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     parser.add_argument("--start", type=int, default=None)
     parser.add_argument("--end", type=int, default=None)
     parser.add_argument("--step", type=int, default=None)
-    parser.add_argument("--schedule_steps", type=str, default=None)
+    parser.add_argument("--schedule_transform_steps", type=str, default=None)
     parser.add_argument("--schedule_transfer_type", type=str, default=None)
     args_ = fill_with_config(parser)
 
