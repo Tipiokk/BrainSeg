@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from skimage.transform import rotate
 
 from brainseg.image import resize_and_pad_center
@@ -156,6 +157,7 @@ def image_manual_correction(image, params, polygons, background=0, scale=1., swa
             subimage_mask = subimage_mask[::-1]
             subimage = subimage[::-1]
 
+        a, b = subimage_mask, subimage
         if rotation_angle != 0:
             subimage_mask = rotate(subimage_mask, rotation_angle)
             subimage = rotate(subimage, rotation_angle)

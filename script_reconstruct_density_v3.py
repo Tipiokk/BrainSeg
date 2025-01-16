@@ -109,7 +109,8 @@ def check_reconstruct_hash(args, excluded, slices_indices):
             if i in excluded or not path_exists:
                 continue
             if not check_hash(args.mri_sections_dir / f"hash_{cell_type}_{i}.txt", hash_mri_window(args.mri_window)):
-                raise RuntimeError(f"Hash mismatch for section {i} and cell type {cell_type}")
+                raise RuntimeError(f"Hash mismatch for section {i} and cell type {cell_type}, because "
+                                   f"window is now {args.mri_window}")
 
 
 def main(args):

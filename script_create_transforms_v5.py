@@ -186,9 +186,12 @@ def process_mri_contrasted3(mri):
 
 def process_mri_contrasted4(mri):
     # image_mri = mri[7] - mri[4] * 20 - mri[3] * 200 + 200
-    bg_thr = np.percentile(mri[7].flatten(), 2)
+    # bg_thr = np.percentile(mri[7].flatten(), 2)
     _, fg = otsu_threshold(mri[7])
-    image_mri = mri[7] - mri[4] * 20 - fg * 200 + 200
+    raw = mri[7].astype(float)
+    raw = raw * 120 / np.percentile(raw, 95)
+    raw = raw.astype(int)
+    image_mri = raw - mri[4] * 20 - fg * 200 + 200
     image_mri = 200 - image_mri
     image_mri = np.clip(image_mri, 0, 255)
     return image_mri
@@ -296,6 +299,7 @@ def build_image_histo(registration_type, histo_root, histo_annotation_root, sect
 
     histo_mod = image_manual_correction(histo_raw, params, ordered_pial, margin=margin,
                                         swap_xy=True, background=0, scale=predownscale_histo * redownscale_histo)
+
     histo_concat = format_histo(histo_mod, histo_pial, histo_gm)
     return MAP_IMAGE_TYPE[registration_type][0](histo_concat)
 
@@ -627,17 +631,6 @@ def create_transforms(
 
     if image_histo is None:
         return False
-
-    """
-    plt.subplot(1, 2, 1)
-    plt.imshow(image_histo)
-    plt.colorbar()
-    plt.subplot(1, 2, 2)
-    plt.imshow(image_mri)
-    plt.colorbar()
-    plt.show()
-    return False
-    """
 
     section_id = str(section_id).zfill(3)
     output_folder_forward = Path(output_dir) / (section_id + "_forward")

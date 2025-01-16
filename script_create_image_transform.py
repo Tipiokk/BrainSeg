@@ -348,7 +348,7 @@ def create_transform_from_dirs(args, dir_histo, dir_mri, dir_histo_annotation,
     hash_param = hash_file(args.manual_correction_file)
     dict_affine_params = parse_dict_param(",".join(param_data))
     for section_id in tqdm(range(start, end, step)):
-        processing_type = get_scheduling_type(args.schedule_steps, args.schedule_transform_type, section_id)
+        processing_type = get_scheduling_type(args.schedule_transform_steps, args.schedule_transform_type, section_id)
 
         is_made = create_transforms(
             dir_histo, dir_mri, dir_histo_annotation,
@@ -381,7 +381,7 @@ if __name__ == "__main__":
     parser.add_argument("--manual_correction_file", type=Path, default=None)
     parser.add_argument("--histo_mask", type=str, default=None)
     parser.add_argument("--transforms_dir", type=Path, default=None)
-    parser.add_argument("--schedule_steps", type=str, default=None)
+    parser.add_argument("--schedule_transform_steps", type=str, default=None)
     parser.add_argument("--schedule_transform_type", type=str, default=None)
     parser.add_argument("--hemisphere", type=str, default=None)
     parser.add_argument("--start", type=int, default=None)
