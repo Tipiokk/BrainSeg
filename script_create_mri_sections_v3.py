@@ -2,8 +2,7 @@ import argparse
 import os
 from pathlib import Path
 import numpy as np
-import subprocess
-import configparser
+import nibabel as nib
 import tqdm
 
 from brainseg.config import fill_with_config
@@ -20,8 +19,6 @@ def get_values_from_wb(ox, oy, oz, slice_number, top=28, bottom=-22, left=-32, r
     brmm = pixel2mm.T @ np.array([1000, 1000, 1])
     tlmm = pixel2mm.T @ np.array([1, 1, 1])
 
-    print(blmm, brmm, tlmm)
-
     values = list(np.concatenate([blmm, brmm, tlmm]))
     text = " ".join(map(lambda x: f"{x:.2f}", values))
     return text
@@ -34,6 +31,8 @@ def main(args):
         pial="ribbon_both_PIAL.nii.gz",
         raw="T1w_acpc_brain.nii.gz",
     )
+    raw_data = nib.load(args.mri_dir / d_outputs["raw"]).get_fdata()
+    max_raw = np.percentile(raw_data, 99) * 2
     for i in tqdm.tqdm(np.arange(args.start, args.end, args.step)):
         i_mri = (i - args.translation_y) / args.scale_y
         i_histo = str(int(i)).zfill(3)
@@ -46,7 +45,7 @@ def main(args):
 
             volume_name = args.mri_dir / fname
             raw_cmd = args.wb_binary
-            max_val = 400 if ftype == "raw" else 1  # empirical 400
+            max_val = max_raw if ftype == "raw" else 1  # empirical 400
             cmd = f'{raw_cmd} -volume-capture-plane "{volume_name}" 1 TRILINEAR 1000 1000 ' \
                   f'0 {max_val} {coord_values} "{output_path}"'
             # print(cmd.split(" "))
