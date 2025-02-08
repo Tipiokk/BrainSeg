@@ -24,7 +24,8 @@ from tqdm import tqdm
 # So let's try it back test
 matplotlib.use('agg')
 
-from brainseg.geo import svg_to_geojson, simplify_line, simplify_all, transform_geojson, save_geojson
+from brainseg.geo import svg_to_geojson, simplify_line, simplify_all, transform_geojson, save_geojson, \
+    fix_missing_qupath_colors
 from brainseg.registration import get_affine_transform_matrix
 from brainseg.viz.draw import draw_polygon_border, draw_in_mask
 
@@ -151,7 +152,7 @@ def run(args, slice_id, plotfast_path, cv_path, output):
     mask_outline_fluo_tmp, _ = get_outline_mask(geo_fluo_tmp, args.fluo_outline_name, shape, args.downscale)
 
     # calculate phase correlation
-    # is is cv, fluo or fluo, cv ?
+    # is cv, fluo or fluo, cv ?
     # do we need to inverse x, y afterwards ?
     shift, _, _ = phase_cross_correlation(mask_outline_cv, mask_outline_fluo_tmp)
 
@@ -186,6 +187,7 @@ def run(args, slice_id, plotfast_path, cv_path, output):
     plt.close()
 
     total_geojson = merge_geojson(args, geo_cv, geo_fluo, matrix)
+    total_geojson = fix_missing_qupath_colors(total_geojson)
 
     save_geojson(args, total_geojson, output)
     print(f"saved geojson at {output}")

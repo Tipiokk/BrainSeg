@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-import brainseg.streamlit.load
-
 
 class DataHandler(ABC):
     name = None
@@ -17,6 +15,15 @@ class DataHandler(ABC):
     @abstractmethod
     def load_mask(self, element):
         pass
+
+    def image(self, item):
+        return self.load_image(item)
+
+    def mask(self, item):
+        return self.load_mask(item)
+
+    def __getitem__(self, item):
+        return self.image(item), self.mask(item)
 
 
 class Provider:

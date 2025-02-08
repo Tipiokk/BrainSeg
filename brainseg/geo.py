@@ -761,3 +761,22 @@ def transform_geojson(json_obj, transform_matrix):
 def save_geojson(args, geo, output):
     with open(output, "w") as f:
         dump(geo, f)
+
+
+def fix_missing_qupath_colors(geojson_object, default_color=[200, 0, 0]):
+    """
+    Ensures all Point annotations have a 'color' field in their classification.
+    If missing, it sets a default color.
+    This function fixes an incompatibility between QuPath 0.3.2 and QuPath 0.5.1
+    """
+    geojson_object = copy.deepcopy(geojson_object)
+    for feature in geojson_object['features']:
+        if "properties" in feature:
+            properties = feature['properties']
+            if 'classification' in properties:
+                classification = properties['classification']
+                if 'color' not in classification:
+                    classification['color'] = default_color  # Set default color if missing
+
+    return geojson_object
+

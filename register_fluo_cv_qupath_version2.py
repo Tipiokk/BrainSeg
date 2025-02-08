@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from brainseg.config import fill_with_config
+from brainseg.geo import save_geojson, fix_missing_qupath_colors
 from brainseg.path import build_path_histo
 from brainseg.registration import get_affine_transform_matrix
 from brainseg.utils import flatten
@@ -98,11 +99,6 @@ def merge_geojson(args, json_cv: FeatureCollection, json_fluo: FeatureCollection
     return final
 
 
-def save_geojson(output_path, geo):
-    with open(output_path, "w") as f:
-        dump(geo, f)
-
-
 def run(args, slice_id, fluo_path, cv_path, output_path):
     print(cv_path, fluo_path)
     with open(cv_path, "r") as f:
@@ -124,18 +120,20 @@ def run(args, slice_id, fluo_path, cv_path, output_path):
     matrix, res = get_affine_transform_matrix(mask_outline_cv, mask_outline_fluo)
     print("Matrix found", matrix)
 
-    if False:
-        plt.subplot(1, 3, 1)
-        plt.imshow(mask_outline_cv)
-        plt.subplot(1, 3, 2)
-        plt.imshow(mask_outline_fluo)
-        plt.subplot(1, 3, 3)
-        plt.imshow(res)
-        plt.show()
+    plt.subplot(1, 3, 1)
+    plt.imshow(mask_outline_cv)
+    plt.subplot(1, 3, 2)
+    plt.imshow(mask_outline_fluo)
+    plt.subplot(1, 3, 3)
+    plt.imshow(res)
+    print(f"saving fig at {str(output_path) + '_qc.png'}")
+    plt.savefig(str(output_path) + "_qc.png")
+    plt.close()
 
     total_geojson = merge_geojson(args, geo_cv, geo_fluo, matrix)
+    total_geojson = fix_missing_qupath_colors(total_geojson)
 
-    save_geojson(output_path, total_geojson)
+    save_geojson(args, output_path, total_geojson)
 
 
 def main(args):
