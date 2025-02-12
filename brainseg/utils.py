@@ -327,6 +327,7 @@ def hash_mri_window(mri_window):
 
 def check_hash(hash_filepath, hash_value):
     if not os.path.exists(hash_filepath):
+        warnings.warn(f"Hash file does not exist")
         return False
     saved_hash = read_txt(hash_filepath)[0]
     is_valid = saved_hash == hash_value
