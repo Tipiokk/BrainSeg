@@ -1,6 +1,7 @@
 import os.path
 import pickle
 import re
+import warnings
 from itertools import product
 from math import ceil, sqrt
 
@@ -130,8 +131,8 @@ def build_patches(size, downscale, step, template_desc=None):
             step=step,
         )
         for i, j in product(
-            range(0, size[0], step * downscale),
-            range(0, size[1], step * downscale)
+            range(0, size[0] - int(step * downscale / 2), step * downscale),
+            range(0, size[1] - int(step * downscale / 2), step * downscale)
         )
     ]
 
@@ -328,4 +329,7 @@ def check_hash(hash_filepath, hash_value):
     if not os.path.exists(hash_filepath):
         return False
     saved_hash = read_txt(hash_filepath)[0]
-    return saved_hash == hash_value
+    is_valid = saved_hash == hash_value
+    if not is_valid:
+        warnings.warn(f"Invalid hash_value '{hash_value}' as compared to saved hash '{saved_hash}'")
+    return is_valid
