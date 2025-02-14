@@ -107,7 +107,7 @@ def check_reconstruct_hash(args, excluded, slices_indices):
         path_exists = os.path.exists(build_path_histo(args.mri_projections_dir, i, args.merged_annotations_mask))
         if i in excluded or not path_exists:
             continue
-        if not check_hash(args.mri_sections_dir / f"hash_raw_{i}.txt", hash_mri_window(args.mri_window)):
+        if not check_hash(args.mri_sections_dir / f"hash_raw_{str(i).zfill(3)}.txt", hash_mri_window(args.mri_window)):
             raise RuntimeError(f"Hash mismatch for section {i}, because "
                                f"window is now {args.mri_window}")
 
