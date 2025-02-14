@@ -133,7 +133,7 @@ def run(args, slice_id, fluo_path, cv_path, output_path):
     total_geojson = merge_geojson(args, geo_cv, geo_fluo, matrix)
     total_geojson = fix_missing_qupath_colors(total_geojson)
 
-    save_geojson(args, output_path, total_geojson)
+    save_geojson(args, total_geojson, output_path)
 
 
 def main(args):
