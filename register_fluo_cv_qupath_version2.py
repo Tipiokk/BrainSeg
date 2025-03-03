@@ -1,4 +1,5 @@
 import sys
+import traceback
 from pathlib import Path
 import argparse
 import numpy as np
@@ -70,6 +71,8 @@ def get_outline_mask(geo: FeatureCollection, key: str, shape, downscale):
 
     for i, coords in enumerate(all_coords):
         print(f"Polygon {i} : number of points {len(coords)}")
+        if len(coords) == 0:
+            continue
         if len(coords) > 1000:
             print("Simplification")
             coords = simplify_line(coords)
@@ -137,6 +140,7 @@ def run(args, slice_id, fluo_path, cv_path, output_path):
 
 
 def main(args):
+    list_errors = []
     for slice_id in tqdm(range(args.start, args.end, args.step)):
         fluo_path = build_path_histo(args.fluo_dir, slice_id, args.fluo_mask)
         cv_path = build_path_histo(args.annotations_dir, slice_id, args.full_annotations_mask)
@@ -145,8 +149,15 @@ def main(args):
             run(args, slice_id, fluo_path, cv_path, output_path)
         except (FileNotFoundError, OSError) as e:
             print(f"Not found {e}")
+        except Exception as e:
+            list_errors.append((slice_id, e))
+            traceback.print_exc()
         else:
             pass
+
+        print("List of Errors")
+        for i, e in list_errors:
+            print(f"Slice {i} had error {e}")
 
 
 if __name__ == "__main__":

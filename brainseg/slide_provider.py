@@ -1,12 +1,13 @@
 from copy import deepcopy
 from math import ceil
+import logging
 
 import numpy as np
 from pathlib import Path
 import aicspylibczi
 from skimage.transform import resize
 from PIL import Image
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon, Polygon, Point, MultiPoint, GeometryCollection
 
 from .geo import quickfix_multipolygon_shapely, get_polygon_by_classification
 from .path import get_mask_from_slidepath
@@ -14,6 +15,21 @@ from .polygon import generate_patch_polygon, rescale_polygon, translate_polygon
 from .provider import DataHandler
 from .utils import read_histo
 from .viz.draw import draw_polygon
+
+
+logging.basicConfig(
+    filename="debug_log.txt",  # File to log to
+    level=logging.DEBUG,       # Log level
+    format="%(asctime)s [%(levelname)s] %(message)s",  # Log format
+    datefmt="%Y-%m-%d %H:%M:%S"  # Date format
+)
+
+
+def log_debug(message, **kwargs):
+    """Simple logger function to log messages to the file."""
+    logging.debug(message)
+    for key, value in kwargs.items():
+        logging.debug(f"    {key}: {value}")
 
 
 def open_image_old(slide, origine, downscale, size):
@@ -404,6 +420,7 @@ class QuPathMultiSlideHandler(DataHandler):
         return self.cache_geo[slidepath]
 
     def load_image(self, element):
+        log_debug("Running for slide", **element)
 
         slide = self.get_slide(element["slidepath"])
         images = [open_image(slide, (element["ori_x"], element["ori_y"]),
@@ -430,8 +447,13 @@ class QuPathMultiSlideHandler(DataHandler):
         for i, structure in enumerate(element["structures"]):
             poly_structure = get_polygon_by_classification(geo, structure)
             poly_mask = poly_structure.intersection(square)
-            if not isinstance(poly_mask, (Polygon, MultiPolygon)):
+            if isinstance(poly_mask, (Point, MultiPoint)):
+                continue
+
+            if isinstance(poly_mask, GeometryCollection):
                 poly_mask = MultiPolygon([p for p in poly_mask.geoms if isinstance(p, (Polygon, MultiPolygon))])
+            elif not isinstance(poly_mask, (Polygon, MultiPolygon)):
+                poly_mask = Polygon()
             poly_mask_ready = rescale_polygon(translate_polygon(poly_mask, -element["ori_x"], -element["ori_y"]),
                                               1 / element["downscale"])
 
