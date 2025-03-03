@@ -219,7 +219,7 @@ def inverse_manual_correction(histo_space, transformed_pial, params):
 
 
 def run_slice(args, slice_id, dict_affine_params):
-    processing_type = get_scheduling_type(args.schedule_steps, args.schedule_transfer_type, slice_id)
+    processing_type = get_scheduling_type(args.schedule_transform_steps, args.schedule_transfer_type, slice_id)
     print("Processing type", processing_type)
 
     vectorized_atlas = load_vectorized_atlas(args, slice_id)
@@ -316,7 +316,7 @@ if __name__ == "__main__":
     parser.add_argument("--manual_correction_file", type=Path, default=None)
     parser.add_argument("--histo_dir", type=Path, default=None)
     parser.add_argument("--histo_mask", type=str, default=None)
-    parser.add_argument("--schedule_steps", type=str, default=None)
+    parser.add_argument("--schedule_transform_steps", type=str, default=None)
     parser.add_argument("--schedule_transfer_type", type=str, default=None)
     parser.add_argument("--start", type=int, default=None)
     parser.add_argument("--end", type=int, default=None)
