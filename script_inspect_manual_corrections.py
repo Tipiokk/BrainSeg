@@ -117,7 +117,7 @@ def create_transform_from_dirs(args, dir_histo, dir_mri, dir_histo_annotation,
 
 
 def main(args):
-    create_transform_from_dirs(args, args.histo_dir, args.mri_section_dir, args.annotations_dir,
+    create_transform_from_dirs(args, args.histo_dir, args.mri_sections_dir, args.annotations_dir,
                                args.histo_mask, args.full_annotations_mask,
                                args.transforms_dir,
                                start=args.start, end=args.end, step=args.step)
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config", type=Path, default=Path("/media/tower/LaCie/REGISTRATION_PROJECT/"
                                                                   "TMP_PIPELINE_M148/config.ini"))
     parser.add_argument("--histo_dir", type=Path, default=None)
-    parser.add_argument("--mri_section_dir", type=Path, default=None)
+    parser.add_argument("--mri_sections_dir", type=Path, default=None)
     parser.add_argument("--annotations_dir", type=Path, default=None)
     parser.add_argument("--full_annotations_mask", type=str, default=None)
     parser.add_argument("--histo_mask", type=str, default=None)
