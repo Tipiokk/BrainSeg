@@ -7,6 +7,26 @@ Project of automatic brain segmentation using Deep Learning.
 The installation can be done using the `install.sh` command.
 It will require poetry, and install the full environment.
 
+
+# Performing Histology to MRI mapping 
+
+## Preprocessing 
+What needed : 
+- Histological sections brain as .czi files
+- Histological sections exported from .czi as .jpg with 10x downscale
+- Individual MRI file, you can eventually use template MRI
+- Plotted cell files as .svg (from CellPlot V1.003) or as .geojson (from QuPath 5.3.0)
+
+## Processing
+
+### 1/ Segmentation of histological sections
+### 2/ Merge cells based on the performed segmentation
+### 3/ Making the MRI sections
+### 3/ Creating transforms between Histology and MRI
+### 4/ Creating some necessary intermediate MRI files
+### 5/ Transfer the neurons onto the MRI surface
+### 6/ Extract connectivity values
+
 ## Process
 
 The segmentation is a two-step process : training and application.
@@ -54,60 +74,6 @@ a png file
 another svg as template, predictions will be added to it (in a new file).
 
 
-# Updates
-
-A v2 version of most of the files contains a version handling
-bi-resolution segmentation. This is because single resolution segmentation
-appeared to be less efficient.
-
-# Multi-Resolution process
-
-1) Considered a slide folder and a mask folder (built as described
-in the previous "full process")
-2) We must generate the dataset using the descriptors with the command 
-`generate_descriptor_dataset.py` that requires the output folder and
-the list of structures (e.g. white matter, claustrum etc) 
-(Now its `DataGenerator3L.ipynb`)
-3) Run `train_multiresolution.py` with the same parameters as for the
-dataset generation and providing the output of the model
-4) Run `apply_multiresolution.py` with the output of the model
-on your slide (or slide directory)
-5) Run `converter.py` to convert the output mask to a processed
-json or svg file.
-6) Run `merge_json.py` to merge multiple json files after an affine
-registration step on the outline
-7) Your file is normally ready to be imported directly into QuPath
-8) You can run 4/5/6 in once using `process_slides.py` and providing
-the folder of the slides and the folder of the other GeoJSON files
-
-## Dev Advancement
-
-1) Done
-2) Can be done quickly (just need to convert DataGenerator3L.ipynb
-to python script and parametrize it)
-3) Can be done quickly, ipynb conversion + parametrization, but after
-a validation of the efficiency of the model
-4) An update of apply_v4.py changing the model and the data pipeline
-(normally few changes are required)
-5) Same conversion as before for the polygon / polylines, but this
-time with more processing for wm border (requires a samples to be made)
-6) Tricky part has been de-risked, now just need to implement 
-(and verify that outline conversion to raster is easy) /!\ we also
-need to find the coordinate system of qupath
-
-
-## Test data
-
-Where can I find them ?
-
-SLIDE="/media/`whoami`/LaCie/REGISTRATION_PROJECT/
-M148_RH/M148 LHRH324.czi"
-
-WEIGHTS="/media/`whoami`/LaCie/Data/models/trires/
-model_test_v1_e7_iou0.897.h5"
-
-OUTPUT="/media/`whoami`/LaCie/REGISTRATION_PROJECT/
-GENERATED_MASKS_PNG/qupath_version1"
 
 
 ## Pipeline supplementary information
