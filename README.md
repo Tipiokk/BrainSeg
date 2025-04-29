@@ -4,11 +4,29 @@ Project of automatic brain segmentation using Deep Learning.
 
 ## Installation
 
-The installation can be done using the `install.sh` command.
+Get a linux environment and open the terminal. 
+On windows, you can use the Windows Subsystem for Linux (WSL) 
+If you are using Ubuntu, you can use `Ctrl + Alt + T`
+
+The installation of the BrainSeg can be done using the `./install.sh` command.
 It will require poetry, and install the full environment.
 
+## Get Workbench Connectome
+To explore the MRI data interactively, you'll need to install the Workbench Connectome application
+```bash 
+wget https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v2.0.1.zip
+```
+You need to install the unzip package : 
+```bash
+sudo apt install unzip
+```
+And then unzip it : 
+```bash 
+unzip workbench-linux64-v2.0.1.zip
+```
 
-# Performing Histology to MRI mapping 
+
+# Performing Histology to MRI mapping of neurons
 
 ## Preprocessing 
 What needed : 
@@ -20,12 +38,14 @@ What needed :
 ## Processing
 
 ### 1/ Segmentation of histological sections
+
 ### 2/ Merge cells based on the performed segmentation
-### 3/ Making the MRI sections
-### 3/ Creating transforms between Histology and MRI
-### 4/ Creating some necessary intermediate MRI files
-### 5/ Transfer the neurons onto the MRI surface
-### 6/ Extract connectivity values
+### 3/ Selecting the cutting angle of the brain
+### 4/ Making the MRI sections
+### 5/ Creating transforms between Histology and MRI
+### 6/ Creating some necessary intermediate MRI files
+### 7/ Transfer the neurons onto the MRI surface and Extract connectivity values
+
 
 ## Process
 
