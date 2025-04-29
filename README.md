@@ -11,8 +11,8 @@ If you are using Ubuntu, you can use `Ctrl + Alt + T`
 The installation of the BrainSeg can be done using the `./install.sh` command.
 It will require poetry, and install the full environment.
 
-## Get Workbench Connectome
-To explore the MRI data interactively, you'll need to install the Workbench Connectome application
+## Get Connectome Workbench
+To explore the MRI data interactively, you'll need to install the Connectome Workbench application :
 ```bash 
 wget https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v2.0.1.zip
 ```
@@ -23,6 +23,10 @@ sudo apt install unzip
 And then unzip it : 
 ```bash 
 unzip workbench-linux64-v2.0.1.zip
+```
+Install the dependencies : 
+```bash
+sudo apt install libglu1 libx11-6 libxext6 libxi6 libstdc++6 libgcc-s1 libgomp1
 ```
 
 
@@ -35,25 +39,35 @@ What needed :
 - Individual MRI file, you can eventually use template MRI
 - Plotted cell files as .svg (from CellPlot V1.003) or as .geojson (from QuPath 5.3.0)
 
-## Processing
+## Configuration files
+Each case is controlled by a dedicated configuration file that defines all necessary parameters.
+These parameters are grouped into six main categories : 
+- **Manual parameters**: Values that mus be calculated and provided manually
+- **Root**: Root paths specific to the current case or dataset
+- **Technical parameters**: Physical or acquisition-related settings
+- **Data Input**: Filenames or masks required as input for the pipeline
+- **Architechture**: Directory stucture difning where input data is located
+- **Environment**: Specific environment variables, such as paths to model weights or executable binaries
 
-### 1/ Segmentation of histological sections
+## Command Names
+All the commands from the BrainSeg pipeline are run from its repository which is located in ~/pipeline/Brainseg. From there, most commands are run with the following line : 
+`./run.sh <command> path_to_your_config_file.ini`
 
-### 2/ Merge cells based on the performed segmentation
-### 3/ Selecting the cutting angle of the brain
-### 4/ Making the MRI sections
-### 5/ Creating transforms between Histology and MRI
-### 6/ Creating some necessary intermediate MRI files
-### 7/ Transfer the neurons onto the MRI surface and Extract connectivity values
+## Full Process
+
+### 1) Segmentation of histological sections
+The segmentation step consists of semi-automatically outlining the white matter and cortical regions in the histological sections, using QuPath.
 
 
-## Process
+### 2) Merge cells based on the performed segmentation
+### 3) Selecting the cutting angle of the brain
+### 4) Making the MRI sections
+### 5) Creating transforms between Histology and MRI
+### 6) Creating some necessary intermediate MRI files
+### 7) Transfer the neurons onto the MRI surface and Extract connectivity values
 
-The segmentation is a two-step process : training and application.
 
-### Training
 
-The data must be first preprocessed
 
 ### Application
 
@@ -67,32 +81,6 @@ using `--data`. The directory must contain a `slides` folder and a
 
 The ratio of the annotation dimensions must be equal to the ratio of the side dimensions, 
 but the size in itself may be different.
-
-
-# Full process
-
-0) Have a folder of slides from an individual, named `SLIDE_FOLDER`
-1) Use PlotFast to trace the contour and export the file as svg 
-using the Ctrl + E shortcut. 
-The svg files are located in the `SVG_FOLDER`. The svg stem name must be
-similar to the one of the slide + the "seg" suffix.
-2) The svg files must be preprocessed and converted to png in order to form
-a proper mask dataset in a folder `FULL_MASK_FOLDER`. The `full_prepro_svg.py`
-command is used to generate that folder.
-3) These png files must be manually filled using paint on a Windows computer.
-4) [Optional] After, if not all masks are filled,
-the filled masks are moved to a `FILLED_MASK_FOLDER`.
-5) Use the command `generate_image_dataset.py` that uses the `SLIDE_FOLDER`,
-the `FILLED_MASK_FOLDER` and generates a `CURATION_DATASET_FOLDER`.
-6) Use the streamlit app using `poetry run streamlit run main_streamlit.py`
-Click on 001 to exclude the image and higher scores according to the
-mask quality
-7) Train a model using a notebook (a script is waiting to be done)
-8) Use `apply.sh` to apply a model on a whole slide, this will generate
-a png file
-9) Use `convert_png_svg.py` to convert png back to svg. You can also use
-another svg as template, predictions will be added to it (in a new file).
-
 
 
 
