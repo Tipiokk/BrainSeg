@@ -53,10 +53,13 @@ These parameters are grouped into six main categories :
 All the commands from the BrainSeg pipeline are run from its repository which is located in ~/pipeline/Brainseg. From there, most commands are run with the following line : 
 `./run.sh <command> path_to_your_config_file.ini`
 
+
 ## Full Process
 
 ### 1) Segmentation of histological sections
 The segmentation step consists of semi-automatically outlining the white matter and cortical regions in the histological sections, using QuPath.
+
+To compute the segmentation, you will need the following variables 
 
 
 ### 2) Merge cells based on the performed segmentation
