@@ -59,8 +59,15 @@ All the commands from the BrainSeg pipeline are run from its repository which is
 ### 1) Segmentation of histological sections
 The segmentation step consists of semi-automatically outlining the white matter and cortical regions in the histological sections, using QuPath.
 
-To compute the segmentation, you will need the following variables 
+To compute the `segmentation`, you will need the following variables :
+- `slides_dir`
+- `slides_mask`
+- `segmentation_weights (h5 file)`
+- `annotation_dir`
+- `annotation_mask`
 
+To ensure the segmentation process went fine, you should check either the *geojson* file opened with their corresponding slide on QuPath, or directly assess the segmentation quality of the png images *(wm and pial)*.
+In case of failure, it is adbised to manually dra
 
 ### 2) Merge cells based on the performed segmentation
 ### 3) Selecting the cutting angle of the brain
