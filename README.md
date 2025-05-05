@@ -49,6 +49,12 @@ These parameters are grouped into six main categories :
 - **Architechture**: Directory stucture difning where input data is located
 - **Environment**: Specific environment variables, such as paths to model weights or executable binaries
 
+## Mandatory parameters 
+Most parameters are specific to one or few scripts, but some are alward mandatory. The list is as follow :
+- `start` : the first slice index
+- `end` : the last slice index
+- `step` : usually 1
+
 ## Command Names
 All the commands from the BrainSeg pipeline are run from its repository which is located in ~/pipeline/Brainseg. From there, most commands are run with the following line : 
 `./run.sh <command> path_to_your_config_file.ini`
@@ -67,14 +73,31 @@ To compute the `segmentation`, you will need the following variables :
 - `annotation_mask`
 
 To ensure the segmentation process went fine, you should check either the *geojson* file opened with their corresponding slide on QuPath, or directly assess the segmentation quality of the png images *(wm and pial)*.
-In case of failure, it is adbised to manually dra
+In case of failure, it is advised to manually draw 10 slices evenly distributed throughout the brain. You can then retrain the segmentation model.
 
-### 2) Merge cells based on the performed segmentation
-### 3) Selecting the cutting angle of the brain
-### 4) Making the MRI sections
-### 5) Creating transforms between Histology and MRI
-### 6) Creating some necessary intermediate MRI files
-### 7) Transfer the neurons onto the MRI surface and Extract connectivity values
+### 2) Retraining the segmentation model
+
+### 3) Merge cells based on the performed segmentation
+The segmentation results can be merged with external annotation plots though two distinct steps, depending on the tool used to generate the plots.
+- If the plots were created using PlotFast/CellPlot, use the corresponding merging step designed for this format.
+- If the plots were created with QuPath, follow the the alternative merging step tailored to QuPath outputs.
+
+These steps ensure proper alignment between the segmentation masks and the annotated sections, regardless of the software originally used.
+
+To compute the `merge` fluorescent sections from Cellplot, you will need :
+- Having run the segmentation before
+- Mandatory parameters
+- `plotfast_dir`
+- `plotfast_mask`
+- `annotations_dir`
+- `full_annotations_mask`
+- `merged_annotations_mask`
+
+### 4) Selecting the cutting angle of the brain
+### 5) Making the MRI sections
+### 6) Creating transforms between Histology and MRI
+### 7) Creating some necessary intermediate MRI files
+### 8) Transfer the neurons onto the MRI surface and Extract connectivity values
 
 
 
