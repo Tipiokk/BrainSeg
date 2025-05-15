@@ -4,15 +4,15 @@ Project of automatic brain segmentation using Deep Learning.
 
 ## Installation
 
-Get a linux environment and open the terminal. 
-On windows, you can use the Windows Subsystem for Linux (WSL) 
+Get a linux environment and open the terminal.  
+On windows, you can use the Windows Subsystem for Linux (WSL)    
 If you are using Ubuntu, you can use `Ctrl + Alt + T`
 
-The installation of the BrainSeg can be done using the `./install.sh` command.
+The installation of the BrainSeg can be done using the `./install.sh` command.  
 It will require poetry, and install the full environment.
 
 ## Get Connectome Workbench
-To explore the MRI data interactively, you'll need to install the Connectome Workbench application :
+To explore the MRI data interactively, you'll need to install the Connectome Workbench application : 
 ```bash 
 wget https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v2.0.1.zip
 ```
@@ -26,7 +26,7 @@ unzip workbench-linux64-v2.0.1.zip
 ```
 Install the dependencies : 
 ```bash
-sudo apt install libglu1 libx11-6 libxext6 libxi6 libstdc++6 libgcc-s1 libgomp1
+sudo apt install libglu1-mesa libx11-6 libxext6 libxi6 libstdc++6 libgcc-s1 libgomp1
 ```
 
 
@@ -40,7 +40,7 @@ What needed :
 - Plotted cell files as .svg (from CellPlot V1.003) or as .geojson (from QuPath 5.3.0)
 
 ## Configuration files
-Each case is controlled by a dedicated configuration file that defines all necessary parameters.
+Each case is controlled by a dedicated configuration file that defines all necessary parameters.  
 These parameters are grouped into six main categories : 
 - **Manual parameters**: Values that mus be calculated and provided manually
 - **Root**: Root paths specific to the current case or dataset
@@ -56,14 +56,14 @@ Most parameters are specific to one or few scripts, but some are alward mandator
 - `step` : usually 1
 
 ## Command Names
-All the commands from the BrainSeg pipeline are run from its repository which is located in ~/pipeline/Brainseg. From there, most commands are run with the following line : 
+All the commands from the BrainSeg pipeline are run from its repository which is located in ~/pipeline/Brainseg. From there, most commands are run with the following line :   
 `./run.sh <command> path_to_your_config_file.ini`
 
 
 ## Full Process
 
 ### 1) Segmentation of histological sections
-The segmentation step consists of semi-automatically outlining the white matter and cortical regions in the histological sections, using QuPath.
+The segmentation step consists of semi-automatically outlining the white matter and cortical regions in the histological sections, using QuPath.  
 
 To compute the `segmentation`, you will need the following variables :
 - `slides_dir`
@@ -72,7 +72,7 @@ To compute the `segmentation`, you will need the following variables :
 - `annotation_dir`
 - `annotation_mask`
 
-To ensure the segmentation process went fine, you should check either the *geojson* file opened with their corresponding slide on QuPath, or directly assess the segmentation quality of the png images *(wm and pial)*.
+To ensure the segmentation process went fine, you should check either the *geojson* file opened with their corresponding slide on QuPath, or directly assess the segmentation quality of the png images *(wm and pial)*.  
 In case of failure, it is advised to manually draw 10 slices evenly distributed throughout the brain. You can then retrain the segmentation model.
 
 ### 2) Retraining the segmentation model
@@ -93,9 +93,15 @@ To compute the `merge` fluorescent sections from Cellplot, you will need :
 - `full_annotations_mask`
 - `merged_annotations_mask`
 
-### 4) Selecting the cutting angle of the brain
+ Use **`merge`** ➜ for PlotFast cell detection    
+ Use **`merge_fluo`** ➜ for merging segmentations with QuPath cell detection
+### 4) Select the cutting angle of the brain
+
 ### 5) Making the MRI sections
 ### 6) Creating transforms between Histology and MRI
+This is the core functionality of the pipeline, enabling the alignment of histological images with MRI data through a computed spacial transform.
+
+
 ### 7) Creating some necessary intermediate MRI files
 ### 8) Transfer the neurons onto the MRI surface and Extract connectivity values
 
